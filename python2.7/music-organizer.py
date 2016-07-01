@@ -23,34 +23,38 @@ import sys
 from mutagen.easyid3 import EasyID3
 
 parser = argparse.ArgumentParser(
-    description='''Organizes a music collection using tag information.
+        description='''Organizes a music collection using tag information.
     The directory format is that the music collection consists of
     artist subdirectories, and there are 2 modes to operate on
     the entire collection or a single artist.
     All names are made lowercase and separated by dashes for easier
     navigation in a Linux filesystem.'''
-)
+    )
 parser.add_argument('--delete-conflicts', action='store_true',
-                    dest='delete_conflicts',
-                    help='''If an artist has duplicate tracks with the same name,
+        dest='delete_conflicts',
+        help='''If an artist has duplicate tracks with the same name,
                     delete them. Note this might always be best in case an
                     artist has multiple versions. To keep multiple versions,
                     fix the tag information.''')
 parser.add_argument('--ignore-multiple-artists', action='store_true',
-                    dest='ignore_multiple_artists',
-                    help='''This script will prompt for confirmation if an artist
+        dest='ignore_multiple_artists',
+        help='''This script will prompt for confirmation if an artist
                     directory has songs with more than 2 different tags.
                     This flag disables the confirmation and won't perform
                     this check.''')
 parser.add_argument('--collection', action='store_true',
-                    help='''Operate in 'collection' mode and run 'artist' mode
+        help='''Operate in 'collection' mode and run 'artist' mode
                     on every subdirectory.''')
 parser.add_argument('--artist', action='store_true',
-                    help='''Operate in 'artist' mode and copy all songs to the
+        help='''Operate in 'artist' mode and copy all songs to the
                     root of the directory and cleanly format the names to
                     be easily typed and navigated in a shell.''')
 parser.add_argument('--delete-unrecognized-extensions', action='store_true',
-                    dest='delete_unrecognized')
+        dest='delete_unrecognized')
+parser.add_argument('--album', action='store_true',
+        dest='album',
+        help='''Adds album folder inside the artist folder to sort out
+                    albums''')
 args = parser.parse_args()
 
 if args.collection and args.artist:
@@ -182,22 +186,29 @@ def song(filename):
         album = audio['album'][0].encode('ascii', 'ignore')
         print("    artist: " + artist)
         print("    title: " + title)
-        print("    album: " + album)
+        if args.album:
+            print("    album: " + album)
     except:
         artist = None
         title = None
-        album = None
+        if args.album:
+            album = None
     neatArtist = toNeat(artist)
     neatTitle = toNeat(title)
-    neatAlbum = toNeat(album)
+    if args.album:
+        neatAlbum = toNeat(album)
     print("    neatArtist: " + neatArtist)
     print("    neatTitle: " + neatTitle)
-    print("    neatAlbum: " + neatAlbum)
+    if args.album:
+        print("    neatAlbum: " + neatAlbum)
     if not os.path.isdir(neatArtist):
         os.mkdir(neatArtist)
-    if not os.path.isdir(neatArtist + "/" + neatAlbum):
-        os.mkdir(neatArtist + "/" + neatAlbum)
-    newFullPath = os.path.join(neatArtist, neatAlbum, neatTitle + ext)
+    if args.album:
+        if not os.path.isdir(neatArtist + "/" + neatAlbum):
+            os.mkdir(neatArtist + "/" + neatAlbum)
+        newFullPath = os.path.join(neatArtist, neatAlbum, neatTitle + ext)
+    else:
+        newFullPath = os.path.join(neatArtist, neatTitle + ext)
     os.rename(filename, newFullPath)
 
 
