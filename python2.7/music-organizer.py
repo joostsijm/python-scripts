@@ -58,6 +58,9 @@ parser.add_argument('--album', action='store_true',
 parser.add_argument('--numbering', action='store_true',
         dest='numbering',
         help='''Adds numbering in front of sorted songs''')
+parser.add_argument('--capital', action='store_true',
+        dest='capital',
+        help='''Makes the first letter of a song capital''')
 args = parser.parse_args()
 
 if args.collection and args.artist:
@@ -70,7 +73,10 @@ elif not (args.collection or args.artist):
 
 # Maps a string such as 'The Beatles' to 'the-beatles'.
 def toNeat(s):
-    s = s.lower().replace("&", "and")
+    if args.capital:
+        s = s.title().replace("&", "and")
+    else:
+        s = s.lower().replace("&", "and")
 
     # Put spaces between and remove blank characters.
     blankCharsPad = r"()\[\],.\\\?\#/\!\$\:\;"
@@ -85,7 +91,10 @@ def toNeat(s):
     s = re.sub("-*$", "", s)
 
     # Ensure the string is only alphanumeric with '-', '+', and '='.
-    search = re.search("[^0-9a-z\-\+\=]", s)
+    if args.capital:
+        search = re.search("[^0-9a-zA-Z\-\+\=]", s)
+    else:
+        search = re.search("[^0-9a-z\-\+\=]", s)
     if search:
         print("Error: Unrecognized character in '" + s + "'")
         sys.exit(-42)
