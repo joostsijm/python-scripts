@@ -55,6 +55,9 @@ parser.add_argument('--album', action='store_true',
         dest='album',
         help='''Adds album folder inside the artist folder to sort out
                     albums''')
+parser.add_argument('--numbering', action='store_true',
+        dest='numbering',
+        help='''Adds numbering in front of sorted songs''')
 args = parser.parse_args()
 
 if args.collection and args.artist:
@@ -184,6 +187,8 @@ def song(filename):
         artist = audio['artist'][0].encode('ascii', 'ignore')
         title = audio['title'][0].encode('ascii', 'ignore')
         album = audio['album'][0].encode('ascii', 'ignore')
+        if args.numbering:
+            tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
         print("    artist: " + artist)
         print("    title: " + title)
         if args.album:
@@ -193,8 +198,13 @@ def song(filename):
         title = None
         if args.album:
             album = None
+        if args.numbering:
+            tracknumber = None
     neatArtist = toNeat(artist)
-    neatTitle = toNeat(title)
+    if args.numbering:
+        neatTitle = tracknumber + ".-" + toNeat(title)
+    else:
+        neatTitle = toNeat(title)
     if args.album:
         neatAlbum = toNeat(album)
     print("    neatArtist: " + neatArtist)
