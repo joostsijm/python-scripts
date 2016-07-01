@@ -179,18 +179,25 @@ def song(filename):
         audio = EasyID3(filename)
         artist = audio['artist'][0].encode('ascii', 'ignore')
         title = audio['title'][0].encode('ascii', 'ignore')
+        album = audio['album'][0].encode('ascii', 'ignore')
         print("    artist: " + artist)
         print("    title: " + title)
+        print("    album: " + album)
     except:
         artist = None
         title = None
+        album = None
     neatArtist = toNeat(artist)
     neatTitle = toNeat(title)
+    neatAlbum = toNeat(album)
     print("    neatArtist: " + neatArtist)
     print("    neatTitle: " + neatTitle)
+    print("    neatAlbum: " + neatAlbum)
     if not os.path.isdir(neatArtist):
         os.mkdir(neatArtist)
-    newFullPath = os.path.join(neatArtist, neatTitle + ext)
+    if not os.path.isdir(neatArtist + "/" + neatAlbum):
+        os.mkdir(neatArtist + "/" + neatAlbum)
+    newFullPath = os.path.join(neatArtist, neatAlbum, neatTitle + ext)
     os.rename(filename, newFullPath)
 
 
