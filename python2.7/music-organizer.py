@@ -21,6 +21,7 @@ import re
 import shutil
 import sys
 from mutagen.easyid3 import EasyID3
+from mutagen.oggvorbis import OggVorbis
 
 parser = argparse.ArgumentParser(
         description='''Organizes a music collection using tag information.
@@ -137,12 +138,16 @@ def artist(artistDir):
         # Move all the files to the root directory.
         for filename in filenames:
             ext = os.path.splitext(filename)[1]
-            if ext == ".mp3":
+            #if ext == ".mp3":
+            if ext in (".mp3" , ".ogg"):
                 fullPath = os.path.join(dirname, filename)
                 print("file: " + str(fullPath))
 
                 try:
-                    audio = EasyID3(fullPath)
+                    if ext == ".mp3":
+                        audio = EasyID3(fullPath)
+                    elif ext == ".ogg":
+                        audio = OggVorbis(fullPath)
                     title = audio['title'][0].encode('ascii', 'ignore')
                     print("    title: " + title)
                 except:
@@ -192,7 +197,10 @@ def song(filename):
     print("Organizing song '" + filename + "'.")
     ext = os.path.splitext(filename)[1]
     try:
-        audio = EasyID3(filename)
+        if ext == ".mp3":
+            audio = EasyID3(filename)
+        elif ext == ".ogg":
+            audio = OggVorbis(filename)
         artist = audio['artist'][0].encode('ascii', 'ignore')
         title = audio['title'][0].encode('ascii', 'ignore')
         album = audio['album'][0].encode('ascii', 'ignore')
