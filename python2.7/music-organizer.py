@@ -149,9 +149,13 @@ def artist(artistDir):
                     elif ext == ".ogg":
                         audio = OggVorbis(fullPath)
                     title = audio['title'][0].encode('ascii', 'ignore')
+                    if args.album:
+                        album = audio['album'][0].encode('ascii', 'ignore')
                     print("    title: " + title)
                 except:
                     title = None
+                    if args.album:
+                        album = None
 
                 if not title:
                     print("Error: title not found for '" + filename + "'")
@@ -160,7 +164,13 @@ def artist(artistDir):
                 neatTitle = toNeat(title)
                 print("    neatTitle: " + neatTitle)
 
-                newFullPath = os.path.join(artistDir, neatTitle + ext)
+                if args.album:
+                    neatAlbum = toNeat(album)
+                    print("    neatAlbum: " + neatAlbum)
+                    newFullPath = os.path.join(artistDir, neatAlbum, neatTitle + ext)
+                
+                else:
+                    newFullPath = os.path.join(artistDir, neatTitle + ext)
                 print("    newFullPath: " + newFullPath)
 
                 if newFullPath != fullPath:
