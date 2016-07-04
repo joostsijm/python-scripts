@@ -242,7 +242,7 @@ def song(filename):
                 tracknumber = None
         neatArtist = toNeat(artist)
         if args.numbering:
-            neatTitle = tracknumber + "." + toNeat(title)
+            neatTitle = tracknumber.zfill(2) + "." + toNeat(title)
         else:
             neatTitle = toNeat(title)
         if args.album:
