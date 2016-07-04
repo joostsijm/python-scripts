@@ -156,15 +156,9 @@ def artist(artistDir):
                             tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
                         except:
                             try:
-                                numb = os.path.basename(filename).split(' ')[0]
-                                print "numb: " + numb
-                                newnumb = re.findall(r'\d+', numb)[0]
-                                print "newnumb: " + newnumb
-                                tracknumber = newnumb
-                                print "tracknumber: " + tracknumber
+                                tracknumber = re.findall(r'\d+', os.path.basename(filename).split(' ')[0])[0]
                             except:
-                                    tracknumber = "error"
-                                    print "tracknumber except: " + tracknumber
+                                tracknumber = "error"
                     print("    title: " + title)
                 except:
                     title = None
@@ -237,16 +231,9 @@ def song(filename):
                 tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
             except:
                 try:
-                    numb = os.path.basename(filename).split(' ')[0]
-                    print "numb: " + numb
-                    newnumb = re.findall(r'\d+', numb)[0]
-                    print "newnumb: " + newnumb
-                    tracknumber = newnumb
-                    print "tracknumber: " + tracknumber
+                    tracknumber = re.findall(r'\d+', os.path.basename(filename).split(' ')[0])[0]
                 except:
                     tracknumber = "error"
-                    print "tracknumber except: " + tracknumber
-
         print("    artist: " + artist)
         print("    title: " + title)
         if args.album:
