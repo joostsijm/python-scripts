@@ -196,12 +196,7 @@ def artist():
                         os.rename(fullPath, newFullPath)
             elif ext == ".pdf":
                 pass
-            else:
-                if not args.delete_unrecognized:
-                    print("Error: Unrecognized file extension in '{}'.".format(
-                        filename))
-                    sys.exit(-42)
-            '''
+           '''
 
         # Delete all subdirectories.
         for subdirname in dirnames:
@@ -264,6 +259,11 @@ def song(filename):
         else:
             newFullPath = os.path.join(neatArtist, neatTitle + ext)
         os.rename(filename, newFullPath)
+    else:
+        if not args.delete_unrecognized:
+            print("Error: Unrecognized file extension in '{}'.".format(filename))
+            sys.exit(-42)
+ 
 
 def collection():
     for f in glob.glob('*'):
