@@ -151,6 +151,14 @@ def artist(artistDir):
                     title = audio['title'][0].encode('ascii', 'ignore')
                     if args.album:
                         album = audio['album'][0].encode('ascii', 'ignore')
+                    if args.numbering:
+                        try:
+                            tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
+                        except:
+                            try:
+                                tracknumber = re.findall(r'\d+', os.path.basename(filename).split(' ')[0])[0]
+                            except:
+                                tracknumber = "error"
                     print("    title: " + title)
                 except:
                     title = None
@@ -161,7 +169,11 @@ def artist(artistDir):
                     print("Error: title not found for '" + filename + "'")
                     sys.exit(-42)
 
-                neatTitle = toNeat(title)
+                if args.numbering and tracknumber is not "error":
+                     neatTitle = tracknumber + ".-" + toNeat(title)
+                else:
+                    neatTitle = toNeat(title)
+                
                 print("    neatTitle: " + neatTitle)
 
                 if args.album:
@@ -215,7 +227,13 @@ def song(filename):
         title = audio['title'][0].encode('ascii', 'ignore')
         album = audio['album'][0].encode('ascii', 'ignore')
         if args.numbering:
-            tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
+            try:
+                tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
+            except:
+                try:
+                    tracknumber = re.findall(r'\d+', os.path.basename(filename).split(' ')[0])[0]
+                except:
+                    tracknumber = "error"
         print("    artist: " + artist)
         print("    title: " + title)
         if args.album:
@@ -228,7 +246,7 @@ def song(filename):
         if args.numbering:
             tracknumber = None
     neatArtist = toNeat(artist)
-    if args.numbering:
+    if args.numbering and tracknumber is not "error":
         neatTitle = tracknumber + ".-" + toNeat(title)
     else:
         neatTitle = toNeat(title)
