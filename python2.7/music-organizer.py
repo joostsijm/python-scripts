@@ -102,11 +102,12 @@ def toNeat(s):
     return s
 
 
-def artist(artistDir):
-    print("Organizing artist '" + artistDir + "'.")
+def artist():
+    print("Organizing artist")
     if not args.ignore_multiple_artists:
         artists = set()
-        for dirname, dirnames, filenames in os.walk(artistDir):
+        for dirname, dirnames, filenames in os.walk("."):
+            print "Random test"
             # Make sure there aren't a lot of different artists
             # in case this was called from the wrong directory.
             for filename in filenames:
@@ -119,10 +120,8 @@ def artist(artistDir):
 
         if len(artists) > 2:
             while True:
-                print("Warning: More than 2 artists found in '{}'.".format(
-                    artistDir))
-                print("This will move all songs to the '{}' directory.".format(
-                    artistDir))
+                print("Warning: More than 2 artists found in '{}'.".format("."))
+                print("This will move all songs to the '{}' directory.".format("."))
                 print("Continue? yes/no")
                 choice = raw_input().lower()
                 valid = {"yes": True, "y": True, "no": False, "n": False}
@@ -134,13 +133,14 @@ def artist(artistDir):
                         sys.exit(-1)
 
     delete_dirs = []
-    for dirname, dirnames, filenames in os.walk(artistDir):
+    for dirname, dirnames, filenames in os.walk("."):
         # Move all the files to the root directory.
         for filename in filenames:
+            fullPath = os.path.join(dirname, filename)
+            song(fullPath)
             ext = os.path.splitext(filename)[1]
-            #if ext == ".mp3":
+            '''
             if ext in (".mp3" , ".ogg"):
-                fullPath = os.path.join(dirname, filename)
                 print("file: " + str(fullPath))
 
                 try:
@@ -203,14 +203,14 @@ def artist(artistDir):
                     print("Error: Unrecognized file extension in '{}'.".format(
                         filename))
                     sys.exit(-42)
+            '''
 
         # Delete all subdirectories.
         for subdirname in dirnames:
             delete_dirs.append(subdirname)
 
     for d in delete_dirs:
-        shutil.rmtree(os.path.join(artistDir, d), ignore_errors=True)
-
+        shutil.rmtree(os.path.join(".", d), ignore_errors=True)
 
 def song(filename):
     if filename[0] == '.':
@@ -266,7 +266,6 @@ def song(filename):
         newFullPath = os.path.join(neatArtist, neatTitle + ext)
     os.rename(filename, newFullPath)
 
-
 def collection():
     for f in glob.glob('*'):
         if os.path.isdir(f):
@@ -275,8 +274,58 @@ def collection():
         elif os.path.isfile(f):
             song(f)
 
+def song(filename):
+#    if filename[0] == '.':
+#        print("Ignoring dotfile: '{}'".format(filename))
+#        return
+    print("Organizing song '" + filename + "'.")
+    ext = os.path.splitext(filename)[1]
+    if ext in (".mp3" , ".ogg"):
+        try:
+            if ext == ".mp3":
+                audio = EasyID3(filename)
+            elif ext == ".ogg":
+                audio = OggVorbis(filename)
+            print audio
+            artist = audio['artist'][0].encode('ascii', 'ignore')
+            title = audio['title'][0].encode('ascii', 'ignore')
+            album = audio['album'][0].encode('ascii', 'ignore')
+            if args.numbering:
+                tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
+            print("    artist: " + artist)
+            print("    title: " + title)
+            if args.album:
+                print("    album: " + album)
+        except:
+            artist = None
+            title = None
+            if args.album:
+                album = None
+            if args.numbering:
+                tracknumber = None
+        neatArtist = toNeat(artist)
+        if args.numbering:
+            neatTitle = tracknumber + ".-" + toNeat(title)
+        else:
+            neatTitle = toNeat(title)
+        if args.album:
+            neatAlbum = toNeat(album)
+        print("    neatArtist: " + neatArtist)
+        print("    neatTitle: " + neatTitle)
+        if args.album:
+            print("    neatAlbum: " + neatAlbum)
+        if not os.path.isdir(neatArtist):
+            os.mkdir(neatArtist)
+        if args.album:
+            if not os.path.isdir(neatArtist + "/" + neatAlbum):
+                os.mkdir(neatArtist + "/" + neatAlbum)
+            newFullPath = os.path.join(neatArtist, neatAlbum, neatTitle + ext)
+        else:
+            newFullPath = os.path.join(neatArtist, neatTitle + ext)
+        os.rename(filename, newFullPath)
+
 if args.artist:
-    artist('.')
+    artist()
 else:
     collection()
 print("\nComplete!")
