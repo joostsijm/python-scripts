@@ -37,6 +37,7 @@ parser.add_argument('-d','--delete-conflicts', action='store_true',
                     delete them. Note this might always be best in case an
                     artist has multiple versions. To keep multiple versions,
                     fix the tag information.''')
+'''
 parser.add_argument('-m','--ignore-multiple-artists', action='store_true',
         dest='ignore_multiple_artists',
         help='''This script will prompt for confirmation if an artist
@@ -50,6 +51,7 @@ parser.add_argument('-a', '--artist', action='store_true',
         help='''Operate in 'artist' mode and copy all songs to the
                     root of the directory and cleanly format the names to
                     be easily typed and navigated in a shell.''')
+'''
 parser.add_argument('-e','--delete-unrecognized-extensions', action='store_true',
         dest='delete_unrecognized')
 parser.add_argument('-A','--album', action='store_true',
