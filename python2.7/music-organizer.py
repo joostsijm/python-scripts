@@ -209,9 +209,9 @@ def song(filename):
 #    if filename[0] == '.':
  #       print("Ignoring dotfile: '{}'".format(filename))
   #      return
-    print("Organizing song '" + filename + "'.")
     ext = os.path.splitext(filename)[1]
     if ext in (".mp3" , ".ogg"):
+        print("Organizing song '" + filename + "'.")
         try:
             if ext == ".mp3":
                 audio = EasyID3(filename)
