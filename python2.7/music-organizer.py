@@ -219,7 +219,8 @@ def song(filename):
                 audio = OggVorbis(filename)
             artist = audio['artist'][0].encode('ascii', 'ignore')
             title = audio['title'][0].encode('ascii', 'ignore')
-            album = audio['album'][0].encode('ascii', 'ignore')
+            if args.album:
+                album = audio['album'][0].encode('ascii', 'ignore')
             if args.numbering:
                 try:
                     tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
@@ -269,7 +270,7 @@ def collection():
     for f in glob.glob('*'):
         if os.path.isdir(f):
             if f != 'iTunes' and f != 'playlists':
-                artist(f)
+                artist()
         elif os.path.isfile(f):
             song(f)
 
