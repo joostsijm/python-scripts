@@ -151,6 +151,20 @@ def artist(artistDir):
                     title = audio['title'][0].encode('ascii', 'ignore')
                     if args.album:
                         album = audio['album'][0].encode('ascii', 'ignore')
+                    if args.numbering:
+                        try:
+                            tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
+                        except:
+                            try:
+                                numb = os.path.basename(filename).split(' ')[0]
+                                print "numb: " + numb
+                                newnumb = re.findall(r'\d+', numb)[0]
+                                print "newnumb: " + newnumb
+                                tracknumber = newnumb
+                                print "tracknumber: " + tracknumber
+                            except:
+                                    tracknumber = "error"
+                                    print "tracknumber except: " + tracknumber
                     print("    title: " + title)
                 except:
                     title = None
@@ -161,7 +175,11 @@ def artist(artistDir):
                     print("Error: title not found for '" + filename + "'")
                     sys.exit(-42)
 
-                neatTitle = toNeat(title)
+                if args.numbering and tracknumber is not "error":
+                     neatTitle = tracknumber + ".-" + toNeat(title)
+                else:
+                    neatTitle = toNeat(title)
+                
                 print("    neatTitle: " + neatTitle)
 
                 if args.album:
@@ -218,7 +236,17 @@ def song(filename):
             try:
                 tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
             except:
-                tracknumber = "error"
+                try:
+                    numb = os.path.basename(filename).split(' ')[0]
+                    print "numb: " + numb
+                    newnumb = re.findall(r'\d+', numb)[0]
+                    print "newnumb: " + newnumb
+                    tracknumber = newnumb
+                    print "tracknumber: " + tracknumber
+                except:
+                    tracknumber = "error"
+                    print "tracknumber except: " + tracknumber
+
         print("    artist: " + artist)
         print("    title: " + title)
         if args.album:
