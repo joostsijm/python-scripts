@@ -37,21 +37,6 @@ parser.add_argument('-d','--delete-conflicts', action='store_true',
                     delete them. Note this might always be best in case an
                     artist has multiple versions. To keep multiple versions,
                     fix the tag information.''')
-'''
-parser.add_argument('-m','--ignore-multiple-artists', action='store_true',
-        dest='ignore_multiple_artists',
-        help='''This script will prompt for confirmation if an artist
-                    directory has songs with more than 2 different tags.
-                    This flag disables the confirmation and won't perform
-                    this check.''')
-parser.add_argument('-c','--collection', action='store_true',
-        help='''Operate in 'collection' mode and run 'artist' mode
-                    on every subdirectory.''')
-parser.add_argument('-a', '--artist', action='store_true',
-        help='''Operate in 'artist' mode and copy all songs to the
-                    root of the directory and cleanly format the names to
-                    be easily typed and navigated in a shell.''')
-'''
 parser.add_argument('-e','--delete-unrecognized-extensions', action='store_true',
         dest='delete_unrecognized')
 parser.add_argument('-A','--album', action='store_true',
@@ -65,14 +50,6 @@ parser.add_argument('-C','--capital', action='store_true',
         dest='capital',
         help='''Makes the first letter of a song capital''')
 args = parser.parse_args()
-
-if args.collection and args.artist:
-    print("Error: Only provide 1 of '--collection' or '--artist'.")
-    sys.exit(-1)
-elif not (args.collection or args.artist):
-    print("Error: Mode '--collection' or '--artist' not provided.")
-    sys.exit(-1)
-
 
 # Maps a string such as 'The Beatles' to 'the-beatles'.
 def toNeat(s):
@@ -106,7 +83,7 @@ def toNeat(s):
 
 def artist():
     print("Organizing artist")
-    if not args.ignore_multiple_artists:
+    if not True: 
         artists = set()
         for dirname, dirnames, filenames in os.walk("."):
             # Make sure there aren't a lot of different artists
@@ -276,8 +253,5 @@ def collection():
         elif os.path.isfile(f):
             song(f)
 
-if args.artist:
-    artist()
-else:
-    collection()
+collection()
 print("\nComplete!")
