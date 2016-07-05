@@ -8,6 +8,7 @@ This script (fix-music-tags.py) mass-removes unwanted music tags.
 """
 
 from mutagen.easyid3 import EasyID3
+from mutagen.oggvorbis import OggVorbis 
 import os
 import argparse
 import glob
@@ -15,7 +16,11 @@ import re
 
 
 def fixTags(fname, keep):
-    audio = EasyID3(fname)
+    ext = os.path.splitext(fname)[1]
+    if ext == ".mp3":
+        audio = EasyID3(fname)
+    elif ext == ".ogg":
+        audio = OggVorbis(fname)
 
     delKeys = []
     for k, v in audio.items():
@@ -27,7 +32,11 @@ def fixTags(fname, keep):
     audio.save()
 
 def fixNumber(fname):
-    audio = EasyID3(fname)
+    ext = os.path.splitext(fname)[1]
+    if ext == ".mp3":
+        audio = EasyID3(fname)
+    elif ext == ".ogg":
+        audio = OggVorbis(fname)
 
     if `'tracknumber'` in audio:
         return
@@ -51,6 +60,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     for fname in glob.glob("{}/*.mp3".format(args.directory)):
+        print("Fixing tags for {}".format(fname))
+        fixTags(fname, args.keep)
+        if args.fixnumber:
+            fixNumber(fname)
+
+    for fname in glob.glob("{}/*.ogg".format(args.directory)):
         print("Fixing tags for {}".format(fname))
         fixTags(fname, args.keep)
         if args.fixnumber:
