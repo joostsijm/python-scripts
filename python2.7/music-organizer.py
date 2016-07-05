@@ -83,111 +83,35 @@ def toNeat(s):
 
 def artist():
     print("Organizing artist")
-    if not True: 
-        artists = set()
-        for dirname, dirnames, filenames in os.walk("."):
-            # Make sure there aren't a lot of different artists
-            # in case this was called from the wrong directory.
-            for filename in filenames:
-                try:
-                    audio = EasyID3(os.path.join(dirname, filename))
-                    artist = audio['artist'][0].decode()
-                    artists.add(artist)
-                except:
-                    pass
-
-        if len(artists) > 2:
-            while True:
-                print("Warning: More than 2 artists found in '{}'.".format("."))
-                print("This will move all songs to the '{}' directory.".format("."))
-                print("Continue? yes/no")
-                choice = raw_input().lower()
-                valid = {"yes": True, "y": True, "no": False, "n": False}
-                if choice in valid:
-                    if valid[choice]:
-                        break
-                    else:
-                        print("Exiting.")
-                        sys.exit(-1)
-
     delete_dirs = []
     for dirname, dirnames, filenames in os.walk("."):
         # Move all the files to the root directory.
         for filename in filenames:
             fullPath = os.path.join(dirname, filename)
-            song(fullPath)
-            '''
-            if ext in (".mp3" , ".ogg"):
-                print("file: " + str(fullPath))
+            # formating song
+            returned = song(fullPath)
+            if returned is "succes":
+                print("succesful formated")
+            elif returned is "delete":
+                print"deleted remaining files in folder"
+            else:
+                returnedlist = returned.split('/')
+                for extdir in returnedlist:
+                    if extdir in delete_dirs:
+                        delete_dirs.remove(extdir)
 
-                try:
-                    if ext == ".mp3":
-                        audio = EasyID3(fullPath)
-                    elif ext == ".ogg":
-                        audio = OggVorbis(fullPath)
-                    title = audio['title'][0].encode('ascii', 'ignore')
-                    if args.album:
-                        album = audio['album'][0].encode('ascii', 'ignore')
-                    if args.numbering:
-                        try:
-                            tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
-                        except:
-                            try:
-                                tracknumber = re.findall(r'\d+', os.path.basename(filename).split(' ')[0])[0]
-                            except:
-                                tracknumber = "error"
-                    print("    title: " + title)
-                except:
-                    title = None
-                    if args.album:
-                        album = None
-
-                if not title:
-                    print("Error: title not found for '" + filename + "'")
-                    sys.exit(-42)
-
-                if args.numbering and tracknumber is not "error":
-                     neatTitle = tracknumber + ".-" + toNeat(title)
-                else:
-                    neatTitle = toNeat(title)
-                
-                print("    neatTitle: " + neatTitle)
-
-                if args.album:
-                    neatAlbum = toNeat(album)
-                    print("    neatAlbum: " + neatAlbum)
-                    newFullPath = os.path.join(artistDir, neatAlbum, neatTitle + ext)
-                
-                else:
-                    newFullPath = os.path.join(artistDir, neatTitle + ext)
-                print("    newFullPath: " + newFullPath)
-
-                if newFullPath != fullPath:
-                    if os.path.isfile(newFullPath):
-                        if args.delete_conflicts:
-                            os.remove(fullPath)
-                            print("File exists: '" + newFullPath + "'")
-                            print("Deleted: '" + fullPath + "'")
-                        else:
-                            print("Error: File exists: '" + newFullPath + "'")
-                            sys.exit(-42)
-                    else:
-                        os.rename(fullPath, newFullPath)
-            elif ext == ".pdf":
-                pass
-           '''
-
-        # Delete all subdirectories.
+        # Add subdirectories to a list 
         for subdirname in dirnames:
             delete_dirs.append(subdirname)
 
+    # deletes subdirectories
     for d in delete_dirs:
         shutil.rmtree(os.path.join(".", d), ignore_errors=True)
 
 def song(filename):
 #    if filename[0] == '.':
- #       print("Ignoring dotfile: '{}'".format(filename))
-  #      return
+#       print("Ignoring dotfile: '{}'".format(filename))
+#       return
     ext = os.path.splitext(filename)[1]
     if ext in (".mp3" , ".ogg"):
         print("Organizing song '" + filename + "'.")
@@ -219,6 +143,7 @@ def song(filename):
                 album = None
             if args.numbering:
                 tracknumber = None
+        
         neatArtist = toNeat(artist)
         if args.numbering:
             neatTitle = tracknumber.zfill(2) + "." + toNeat(title)
@@ -238,11 +163,26 @@ def song(filename):
             newFullPath = os.path.join(neatArtist, neatAlbum, neatTitle + ext)
         else:
             newFullPath = os.path.join(neatArtist, neatTitle + ext)
-        os.rename(filename, newFullPath)
+
+        if newFullPath != filename:
+            if os.path.isfile(newFullPath):
+                if args.delete_conflicts:
+                    os.remove(filename)
+                    print("File exists: '" + newFullPath + "'")
+                    print("Deleted: '" + filename + "'")
+                else:
+                    print("Error: File exists: '" + newFullPath + "'")
+                    return os.path.split(newFullPath)[0]
+            else:
+                os.rename(filename, newFullPath)
+                return "succes"
+
     else:
         if not args.delete_unrecognized:
             print("Error: Unrecognized file extension in '{}'.".format(filename))
             sys.exit(-42)
+        else:
+            return "delete"
  
 
 def collection():
