@@ -59,13 +59,14 @@ if __name__ == '__main__':
             help="Trying to fix song number.")
     args = parser.parse_args()
 
-    for fname in glob.glob("{}/*.mp3".format(args.directory)):
-        print("Fixing tags for {}".format(fname))
-        fixTags(fname, args.keep)
-        if args.fixnumber:
-            fixNumber(fname)
+    types = ('*.mp3', '*.ogg')
+    files_grabbed = []
+    for files in types:
+        files_grabbed.extend(
+            glob.glob("{}/*{}".format(args.directory, files))
+        )
 
-    for fname in glob.glob("{}/*.ogg".format(args.directory)):
+    for fname in files_grabbed: 
         print("Fixing tags for {}".format(fname))
         fixTags(fname, args.keep)
         if args.fixnumber:
