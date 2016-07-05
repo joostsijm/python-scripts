@@ -35,7 +35,7 @@ def fixTags(fname, keep):
 
 def fixNumber(fname):
     audio = returnAudio(fname)
-    if `'tracknumber'` in audio:
+    if 'tracknumber' in audio:
         return
 
     else:
