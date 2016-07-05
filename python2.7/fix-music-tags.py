@@ -14,14 +14,16 @@ import argparse
 import glob
 import re
 
+def returnAudio(path):
+    ext = os.path.splitext(path)[1]
+    if ext == ".mp3":
+        audio = EasyID3(path)
+    elif ext == ".ogg":
+        audio = OggVorbis(path)
+    return audio
 
 def fixTags(fname, keep):
-    ext = os.path.splitext(fname)[1]
-    if ext == ".mp3":
-        audio = EasyID3(fname)
-    elif ext == ".ogg":
-        audio = OggVorbis(fname)
-
+    audio = returnAudio(fname)
     delKeys = []
     for k, v in audio.items():
         if k not in keep:
@@ -32,12 +34,7 @@ def fixTags(fname, keep):
     audio.save()
 
 def fixNumber(fname):
-    ext = os.path.splitext(fname)[1]
-    if ext == ".mp3":
-        audio = EasyID3(fname)
-    elif ext == ".ogg":
-        audio = OggVorbis(fname)
-
+    audio = returnAudio(fname)
     if `'tracknumber'` in audio:
         return
 
