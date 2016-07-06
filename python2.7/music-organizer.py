@@ -132,6 +132,7 @@ def song(filename):
                         tracknumber = re.findall(r'\d+', os.path.basename(filename).split(' ')[0])[0]
                     except:
                         tracknumber = "error"
+                neatTracknumber = tracknumber.split('/')[0].zfill(2)
             print("    artist: " + artist)
             print("    title: " + title)
             if args.album:
@@ -146,7 +147,7 @@ def song(filename):
         
         neatArtist = toNeat(artist)
         if args.numbering:
-            neatTitle = tracknumber.zfill(2) + "." + toNeat(title)
+            neatTitle = neatTracknumber + "." + toNeat(title)
         else:
             neatTitle = toNeat(title)
         if args.album:
