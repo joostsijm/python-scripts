@@ -23,6 +23,8 @@ import sys
 import toNeat
 from mutagen.easyid3 import EasyID3
 from mutagen.oggvorbis import OggVorbis
+import tracknumber
+import audioFunction
 
 parser = argparse.ArgumentParser(
         description='''Organizes a music collection using tag information.
@@ -87,23 +89,13 @@ def song(filename):
     if ext in (".mp3" , ".ogg"):
         print("Organizing song '" + filename + "'.")
         try:
-            if ext == ".mp3":
-                audio = EasyID3(filename)
-            elif ext == ".ogg":
-                audio = OggVorbis(filename)
+            audio = audioFunction.returnAudio(filename)
             artist = audio['artist'][0].encode('ascii', 'ignore')
             title = audio['title'][0].encode('ascii', 'ignore')
             if args.album:
                 album = audio['album'][0].encode('ascii', 'ignore')
             if args.numbering:
-                try:
-                    tracknumber = audio['tracknumber'][0].encode('ascii', 'ignore')
-                except:
-                    try:
-                        tracknumber = re.findall(r'\d+', os.path.basename(filename).split(' ')[0])[0]
-                    except:
-                        tracknumber = "error"
-                neatTracknumber = tracknumber.split('/')[0].zfill(2)
+                neatTracknumber = tracknumber.getTracknumber(filename)
             print("    artist: " + artist)
             print("    title: " + title)
             if args.album:
@@ -114,7 +106,7 @@ def song(filename):
             if args.album:
                 album = None
             if args.numbering:
-                tracknumber = None
+                neatTracknumber = None
         
         neatArtist = toNeat.toNeat(artist, args)
         if args.numbering:

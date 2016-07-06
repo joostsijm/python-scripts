@@ -13,17 +13,11 @@ import os
 import argparse
 import glob
 import re
-
-def returnAudio(path):
-    ext = os.path.splitext(path)[1]
-    if ext == ".mp3":
-        audio = EasyID3(path)
-    elif ext == ".ogg":
-        audio = OggVorbis(path)
-    return audio
+import tracknumber 
+import audioFunction
 
 def fixTags(fname, keep):
-    audio = returnAudio(fname)
+    audio = audioFunction.returnAudio(fname)
     delKeys = []
     for k, v in audio.items():
         if k not in keep:
@@ -32,22 +26,6 @@ def fixTags(fname, keep):
     for k in delKeys:
         del audio[k]
     audio.save()
-
-def fixNumber(fname):
-    audio = returnAudio(fname)
-    if 'tracknumber' in audio:
-        if '/' in audio['tracknumber'][0]:
-            audio['tracknumber'] = audio['tracknumber'][0].split('/')[0].zfill(2)
-            audio.save()
-        return
-
-    else:
-        try:
-            tracknumber = re.findall(r'\d+', os.path.basename(fname).split(' ')[0])[0]
-            audio['tracknumber'] = tracknumber.zfill(2) 
-            audio.save()
-        except:
-            return
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -70,4 +48,4 @@ if __name__ == '__main__':
         print("Fixing tags for {}".format(fname))
         fixTags(fname, args.keep)
         if args.fixnumber:
-            fixNumber(fname)
+            tracknumber.formatNumber(fname)
