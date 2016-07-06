@@ -36,6 +36,9 @@ def fixTags(fname, keep):
 def fixNumber(fname):
     audio = returnAudio(fname)
     if 'tracknumber' in audio:
+        if '/' in audio['tracknumber'][0]:
+            audio['tracknumber'] = audio['tracknumber'][0].split('/')[0].zfill(2)
+            audio.save()
         return
 
     else:
