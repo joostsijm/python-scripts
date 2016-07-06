@@ -20,6 +20,7 @@ import os
 import re
 import shutil
 import sys
+import toNeat
 from mutagen.easyid3 import EasyID3
 from mutagen.oggvorbis import OggVorbis
 
@@ -50,36 +51,6 @@ parser.add_argument('-C','--capital', action='store_true',
         dest='capital',
         help='''Makes the first letter of a song capital''')
 args = parser.parse_args()
-
-# Maps a string such as 'The Beatles' to 'the-beatles'.
-def toNeat(s):
-    if args.capital:
-        s = s.title().replace("&", "and")
-    else:
-        s = s.lower().replace("&", "and")
-
-    # Put spaces between and remove blank characters.
-    blankCharsPad = r"()\[\],.\\\?\#/\!\$\:\;"
-    blankCharsNoPad = r"'\""
-    s = re.sub(r"([" + blankCharsPad + r"])([^ ])", "\\1 \\2", s)
-    s = re.sub("[" + blankCharsPad + blankCharsNoPad + "]", "", s)
-
-    # Replace spaces with a single dash.
-    s = re.sub(r"[ \*\_]+", "-", s)
-    s = re.sub("-+", "-", s)
-    s = re.sub("^-*", "", s)
-    s = re.sub("-*$", "", s)
-
-    # Ensure the string is only alphanumeric with '-', '+', and '='.
-    if args.capital:
-        search = re.search("[^0-9a-zA-Z\-\+\=]", s)
-    else:
-        search = re.search("[^0-9a-z\-\+\=]", s)
-    if search:
-        print("Error: Unrecognized character in '" + s + "'")
-        sys.exit(-42)
-    return s
-
 
 def artist():
     print("Organizing artist")
@@ -145,13 +116,13 @@ def song(filename):
             if args.numbering:
                 tracknumber = None
         
-        neatArtist = toNeat(artist)
+        neatArtist = toNeat.toNeat(artist, args)
         if args.numbering:
-            neatTitle = neatTracknumber + "." + toNeat(title)
+            neatTitle = neatTracknumber + "." + toNeat.toNeat(title, args)
         else:
-            neatTitle = toNeat(title)
+            neatTitle = toNeat.toNeat(title, args)
         if args.album:
-            neatAlbum = toNeat(album)
+            neatAlbum = toNeat.toNeat(album, args)
         print("    neatArtist: " + neatArtist)
         print("    neatTitle: " + neatTitle)
         if args.album:

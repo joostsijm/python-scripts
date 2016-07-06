@@ -15,12 +15,13 @@ import shutil
 import sys
 from mutagen.easyid3 import EasyID3
 from collections import defaultdict
-
+import toNeat
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--musicDir', type=str, default='.')
     parser.add_argument('--playlistDir', type=str, default='./playlists/auto')
+    parser.add_argument('-C','--capital', action='store_true', help='''Changes names to capital''')
     args = parser.parse_args()
 
     genres = defaultdict(list)
@@ -34,7 +35,8 @@ def main():
             audio = EasyID3(p)
             if 'genre' in audio:
                 assert(len(audio['genre']) == 1)
-                genre = toNeat(str(audio['genre'][0]))
+                #genre = toNeat(str(audio['genre'][0]))
+                genre = toNeat.toNeat(str(audio['genre'][0]), args)
             else:
                 genre = 'Unknown'
             genres[genre].append(p)
@@ -52,7 +54,7 @@ def main():
 
 # Maps a string such as 'The Beatles' to 'the-beatles'.
 
-
+'''
 def toNeat(s):
     s = s.lower().replace("&", "and")
 
@@ -74,6 +76,7 @@ def toNeat(s):
         print("Error: Unrecognized character in '" + s + "'")
         sys.exit(-42)
     return s
+'''
 
 if __name__ == '__main__':
     main()
